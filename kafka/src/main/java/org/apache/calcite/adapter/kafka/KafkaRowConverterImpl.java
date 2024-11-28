@@ -38,6 +38,8 @@ public class KafkaRowConverterImpl implements KafkaRowConverter<byte[], byte[]> 
     final RelDataTypeFactory typeFactory =
         new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     final RelDataTypeFactory.Builder fieldInfo = typeFactory.builder();
+
+    // 定义了抽象出的”表“的所有”列“，对应的类型
     fieldInfo.add("MSG_PARTITION", typeFactory.createSqlType(SqlTypeName.INTEGER)).nullable(false);
     fieldInfo.add("MSG_TIMESTAMP", typeFactory.createSqlType(SqlTypeName.BIGINT)).nullable(false);
     fieldInfo.add("MSG_OFFSET", typeFactory.createSqlType(SqlTypeName.BIGINT)).nullable(false);
@@ -56,6 +58,7 @@ public class KafkaRowConverterImpl implements KafkaRowConverter<byte[], byte[]> 
    * @return fields in the row
    */
   @Override public Object[] toRow(final ConsumerRecord<byte[], byte[]> message) {
+    // 返回了一”行“数据中的每个”列“的内容
     Object[] fields = new Object[5];
     fields[0] = message.partition();
     fields[1] = message.timestamp();

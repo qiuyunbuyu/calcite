@@ -18,6 +18,8 @@ package org.apache.calcite.adapter.kafka;
 
 /**
  * Parameter constants used to define a Kafka table.
+ *
+ * 抽象kafka的topic为一张表时所需的信息
  */
 interface KafkaTableConstants {
   String SCHEMA_TOPIC_NAME = "topic.name";

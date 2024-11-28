@@ -22,11 +22,15 @@ import java.util.Map;
 
 /**
  * Available options for {@link KafkaStreamTable}.
+ * 为了能抽象成table，开出来的属性
  */
 public final class KafkaTableOptions {
+  // "Interface to handle formatting between Kafka message and Calcite row."
+  private KafkaRowConverter rowConverter;
+
+  // kafka原生consumer相关
   private String bootstrapServers;
   private String topicName;
-  private KafkaRowConverter rowConverter;
   private Map<String, String> consumerParams;
   // added to inject MockConsumer for testing.
   private Consumer consumer;

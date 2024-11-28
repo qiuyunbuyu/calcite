@@ -35,6 +35,9 @@ public interface KafkaRowConverter<K, V> {
   /**
    * Generates the row type for a given Kafka topic.
    *
+   * 输入： 一个topic的名字
+   * 输出：这个topic就被视为了一张table，table就有fields列，这个方法返回所有field的类型
+   *
    * @param topicName Kafka topic name
    * @return row type
    */
@@ -43,6 +46,9 @@ public interface KafkaRowConverter<K, V> {
   /**
    * Parses and reformats a Kafka message from the consumer,
    * to align with row type defined as {@link #rowDataType(String)}.
+   *
+   * 输入：一个消息message，这个message被视为了db中的一个“行”
+   * 输出：这一“行”的file”列“
    *
    * @param message Raw Kafka message record
    * @return fields in the row

@@ -37,18 +37,35 @@ public class KafkaTableFactory implements TableFactory<KafkaStreamTable> {
   public KafkaTableFactory() {
   }
 
+  /**
+   * 创建表, 返回KafkaStreamTable，KafkaStreamTable只有一个属性 KafkaTableOptions
+   * 简单来说这个方法就是初始化好KafkaTableOptions，塞给KafkaStreamTable
+   *
+   * @param schema Schema this table belongs to
+   * @param name Name of this table
+   * @param operand The "operand" JSON property
+   * @param rowType Row type. Specified if the "columns" JSON property.
+   * @return KafkaStreamTable
+   */
   @Override public KafkaStreamTable create(SchemaPlus schema,
       String name,
       Map<String, Object> operand,
       @Nullable RelDataType rowType) {
+
+    // 构建KafkaTableOptions：kafka相关属性 + RowConverter
     final KafkaTableOptions tableOptionBuilder = new KafkaTableOptions();
 
+    // 从operand的Map中取”bootstrap.servers“
     tableOptionBuilder.setBootstrapServers(
         (String) operand.getOrDefault(KafkaTableConstants.SCHEMA_BOOTSTRAP_SERVERS, null));
+
+    // 从operand的Map中取”topic.name”
     tableOptionBuilder.setTopicName(
         (String) operand.getOrDefault(KafkaTableConstants.SCHEMA_TOPIC_NAME, null));
 
     final KafkaRowConverter rowConverter;
+
+    // 取"row.converter"：自定义的
     if (operand.containsKey(KafkaTableConstants.SCHEMA_ROW_CONVERTER)) {
       String rowConverterClass = (String) operand.get(KafkaTableConstants.SCHEMA_ROW_CONVERTER);
       try {
@@ -66,14 +83,19 @@ public class KafkaTableFactory implements TableFactory<KafkaStreamTable> {
         throw new RuntimeException(details, e);
       }
     } else {
+    // 默认的：KafkaRowConverterImpl
       rowConverter = new KafkaRowConverterImpl();
     }
     tableOptionBuilder.setRowConverter(rowConverter);
 
+    // 从operand的Map中取”consumer.params“: consumer属性
     if (operand.containsKey(KafkaTableConstants.SCHEMA_CONSUMER_PARAMS)) {
       tableOptionBuilder.setConsumerParams(
           (Map<String, String>) operand.get(KafkaTableConstants.SCHEMA_CONSUMER_PARAMS));
     }
+
+    // 从operand的Map中取”consumer.cust“: consumer的类
+    // calcite中测试的使用的是 [ org.apache.calcite.adapter.kafka.KafkaMockConsumer ]
     if (operand.containsKey(KafkaTableConstants.SCHEMA_CUST_CONSUMER)) {
       String custConsumerClass = (String) operand.get(KafkaTableConstants.SCHEMA_CUST_CONSUMER);
       try {

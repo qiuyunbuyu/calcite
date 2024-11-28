@@ -42,12 +42,16 @@ import static java.util.Objects.requireNonNull;
  *           refer to {@link ConsumerConfig#VALUE_DESERIALIZER_CLASS_CONFIG};
  */
 public class KafkaMessageEnumerator<K, V> implements Enumerator<@Nullable Object[]> {
+  // kafka consumer
   final Consumer consumer;
+  // kafka message与calcite row中转换抽象
   final KafkaRowConverter<K, V> rowConverter;
   private final AtomicBoolean cancelFlag;
 
   // runtime
+  // message列表
   private final Deque<ConsumerRecord<K, V>> bufferedRecords = new ArrayDeque<>();
+  // 当前message
   private @Nullable ConsumerRecord<K, V> curRecord;
 
   KafkaMessageEnumerator(final Consumer consumer,
@@ -60,20 +64,26 @@ public class KafkaMessageEnumerator<K, V> implements Enumerator<@Nullable Object
 
   /**
    * It returns an Array of Object, with each element represents a field of row.
+   * 返回curRecord抽象出的row，对应的所有fields
    */
   @Override public Object[] current() {
     return rowConverter.toRow(requireNonNull(curRecord, "curRecord"));
   }
 
+  /**
+   * advanced to the next element
+   * 取下一个
+   * @return 是否取成功
+   */
   @Override public boolean moveNext() {
     if (cancelFlag.get()) {
       return false;
     }
-
+    // 拉取一批消息
     while (bufferedRecords.isEmpty()) {
       pullRecords();
     }
-
+    // 从bufferedRecords，更新curRecord
     curRecord = bufferedRecords.removeFirst();
     return true;
   }

@@ -52,12 +52,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * implemented as a STREAM table.
  */
 public class KafkaStreamTable implements ScannableTable, StreamableTable {
+
+  // 为了能抽象成table，开出来的属性
   final KafkaTableOptions tableOptions;
 
   KafkaStreamTable(final KafkaTableOptions tableOptions) {
     this.tableOptions = tableOptions;
   }
 
+  // 返回KafkaMessageEnumerator，”可以获得表数据的一个抽象枚举器“
   @Override public Enumerable<@Nullable Object[]> scan(final DataContext root) {
     final AtomicBoolean cancelFlag = DataContext.Variable.CANCEL_FLAG.get(root);
     return new AbstractEnumerable<@Nullable Object[]>() {
@@ -87,10 +90,12 @@ public class KafkaStreamTable implements ScannableTable, StreamableTable {
     };
   }
 
+  // 返回row-field类型
   @Override public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
     return tableOptions.getRowConverter().rowDataType(tableOptions.getTopicName());
   }
 
+  // 返回table的分析
   @Override public Statistic getStatistic() {
     return Statistics.of(100d, ImmutableList.of(),
         RelCollations.createSingleton(0));
