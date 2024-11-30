@@ -43,8 +43,8 @@ public class KafkaRowConverterImpl implements KafkaRowConverter<byte[], byte[]> 
     fieldInfo.add("MSG_PARTITION", typeFactory.createSqlType(SqlTypeName.INTEGER)).nullable(false);
     fieldInfo.add("MSG_TIMESTAMP", typeFactory.createSqlType(SqlTypeName.BIGINT)).nullable(false);
     fieldInfo.add("MSG_OFFSET", typeFactory.createSqlType(SqlTypeName.BIGINT)).nullable(false);
-    fieldInfo.add("MSG_KEY_BYTES", typeFactory.createSqlType(SqlTypeName.VARBINARY)).nullable(true);
-    fieldInfo.add("MSG_VALUE_BYTES", typeFactory.createSqlType(SqlTypeName.VARBINARY))
+    fieldInfo.add("MSG_KEY_BYTES", typeFactory.createSqlType(SqlTypeName.STRING_TYPES.get(0))).nullable(true);
+    fieldInfo.add("MSG_VALUE_BYTES", typeFactory.createSqlType(SqlTypeName.STRING_TYPES.get(0)))
         .nullable(false);
 
     return fieldInfo.build();

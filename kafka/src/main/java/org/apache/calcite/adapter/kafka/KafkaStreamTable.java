@@ -16,6 +16,8 @@
  */
 package org.apache.calcite.adapter.kafka;
 
+import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
+
 import org.apache.calcite.DataContext;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.linq4j.AbstractEnumerable;
@@ -75,9 +77,9 @@ public class KafkaStreamTable implements ScannableTable, StreamableTable {
             tableOptions.getBootstrapServers());
         // by default it's <byte[], byte[]>
         consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-            "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+            "org.apache.kafka.common.serialization.StringSerializer");
         consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-            "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+            "org.apache.kafka.common.serialization.StringSerializer");
 
         if (tableOptions.getConsumerParams() != null) {
           consumerConfig.putAll(tableOptions.getConsumerParams());
